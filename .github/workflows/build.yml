@@ -27,7 +27,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '23'
 
       - name: Install dependencies (frontend)
         run: |
@@ -37,9 +37,6 @@ jobs:
 
       - name: Install Wails
         run: go install github.com/wailsapp/wails/v2/cmd/wails@latest
-
-      - name: Clean Wails Cache
-        run: wails doctor -clean
 
       - name: Build Wails App (Windows)
         if: matrix.os == 'windows-latest'
