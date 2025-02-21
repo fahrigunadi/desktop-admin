@@ -13,7 +13,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest, macos-latest]
+        os: [windows-latest, ubuntu-latest]
 
     steps:
       - name: Checkout repository
@@ -48,11 +48,6 @@ jobs:
         run: wails build -platform linux/amd64
         shell: bash
 
-      - name: Build Wails App (macOS)
-        if: matrix.os == 'macos-latest'
-        run: wails build -platform darwin/universal
-        shell: bash
-
       - name: Upload Windows Build Artifact
         if: matrix.os == 'windows-latest'
         uses: actions/upload-artifact@v4
@@ -65,11 +60,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: wails-linux
-          path: build/bin/*
-
-      - name: Upload macOS Build Artifact
-        if: matrix.os == 'macos-latest'
-        uses: actions/upload-artifact@v4
-        with:
-          name: wails-macos
           path: build/bin/*
