@@ -59,10 +59,16 @@ jobs:
         if: runner.os == 'ubuntu-22.04'
         run: mv build/bin/admin admin-linux-amd64
 
-      - name: Upload Artifact to Release
+      - name: Upload Artifact to Release (Linux)
         uses: softprops/action-gh-release@v2
+        if: runner.os == 'ubuntu-22.04'
         with:
-          files: |
-            myapp-windows-amd64.exe
-            myapp-linux-amd64
-          token: ${{ secrets.GITHUB_TOKEN }}
+          files: myapp-linux-amd64
+          token: ${{ secrets.MY_GITHUB_PAT }}
+
+      - name: Upload Artifact to Release (Windows)
+        uses: softprops/action-gh-release@v2
+        if: matrix.os == 'windows-latest'
+        with:
+          files: myapp-windows-amd64.exe
+          token: ${{ secrets.MY_GITHUB_PAT }}
