@@ -40,29 +40,17 @@ jobs:
 
       - name: Build Wails App (Windows)
         if: matrix.os == 'windows-latest'
-        run: |
-          set CGO_ENABLED=1
-          set GOOS=windows
-          set GOARCH=amd64
-          wails build -platform windows/amd64
+        run: wails build -platform windows/amd64
         shell: cmd
 
       - name: Build Wails App (Linux)
         if: matrix.os == 'ubuntu-latest'
-        run: |
-          export CGO_ENABLED=1
-          export GOOS=linux
-          export GOARCH=amd64
-          wails build -platform linux/amd64
+        run: wails build -platform linux/amd64
         shell: bash
 
       - name: Build Wails App (macOS)
         if: matrix.os == 'macos-latest'
-        run: |
-          export CGO_ENABLED=1
-          export GOOS=darwin
-          export GOARCH=arm64
-          wails build -platform darwin/universal
+        run: wails build -platform darwin/universal
         shell: bash
 
       - name: Upload Windows Build Artifact
