@@ -1,25 +1,9 @@
 <script lang="ts" setup>
-import {reactive} from 'vue'
-import {Greet} from '../../wailsjs/go/main/App'
-
-const data = reactive({
-  name: "",
-  resultText: "Please enter your name below 👇",
-})
-
-function greet() {
-  Greet(data.name).then(result => {
-    data.resultText = result
-  })
-}
-
+import AppLayout from '../components/layouts/AppLayout.vue';
 </script>
 
 <template>
-  <main>
-    <div id="result" class="result">{{ data.resultText }}</div>
-    <div id="input" class="input-box">
-      <RouterLink to="/">Home</RouterLink>
-    </div>
-  </main>
+  <AppLayout>
+
+  </AppLayout>
 </template>
