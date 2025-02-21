@@ -2,11 +2,8 @@ name: Build Wails App
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+    tags:
+      - "v*.*.*"
 
 jobs:
   build:
@@ -54,16 +51,18 @@ jobs:
         run: wails build -platform linux/amd64
         shell: bash
 
-      - name: Upload Windows Build Artifact
+      - name: Rename Output (Windows)
         if: matrix.os == 'windows-latest'
-        uses: actions/upload-artifact@v4
-        with:
-          name: wails-windows
-          path: build/bin/*.exe
+        run: mv build/bin/admin.exe admin-windows-amd64.exe
 
-      - name: Upload Linux Build Artifact
-        if: matrix.os == 'ubuntu-22.04'
-        uses: actions/upload-artifact@v4
+      - name: Rename Output (Linux)
+        if: runner.os == 'ubuntu-22.04'
+        run: mv build/bin/admin admin-linux-amd64
+
+      - name: Upload Artifact to Release
+        uses: softprops/action-gh-release@v2
         with:
-          name: wails-linux
-          path: build/bin/*
+          files: |
+            myapp-windows-amd64.exe
+            myapp-linux-amd64
+          token: ${{ secrets.GITHUB_TOKEN }}
