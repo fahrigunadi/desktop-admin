@@ -63,12 +63,12 @@ jobs:
         uses: softprops/action-gh-release@v2
         if: matrix.os == 'ubuntu-22.04'
         with:
-          files: myapp-linux-amd64
+          files: admin-linux-amd64
           token: ${{ secrets.MY_GITHUB_PAT }}
 
       - name: Upload Artifact to Release (Windows)
         uses: softprops/action-gh-release@v2
         if: matrix.os == 'windows-latest'
         with:
-          files: myapp-windows-amd64.exe
+          files: admin-windows-amd64.exe
           token: ${{ secrets.MY_GITHUB_PAT }}
