@@ -4,52 +4,87 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   build:
-    name: Build
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
 
     steps:
-      - name: Checkout kode
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.22"
+          go-version: '1.23'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies (frontend)
+        run: |
+          cd frontend
+          npm install
+        shell: bash
 
       - name: Install Wails
         run: go install github.com/wailsapp/wails/v2/cmd/wails@latest
 
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          cache: "npm"
-          cache-dependency-path: frontend/package-lock.json
+      - name: Clean Wails Cache
+        run: wails doctor -clean
 
-      - name: Build Wails App
-        run: wails build -platform windows/amd64,linux/amd64,darwin/universal
+      - name: Build Wails App (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          set CGO_ENABLED=1
+          set GOOS=windows
+          set GOARCH=amd64
+          wails build -platform windows/amd64
+        shell: cmd
+
+      - name: Build Wails App (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          export CGO_ENABLED=1
+          export GOOS=linux
+          export GOARCH=amd64
+          wails build -platform linux/amd64
         shell: bash
 
-      - name: Upload artifact (Windows)
-        uses: actions/upload-artifact@v4
+      - name: Build Wails App (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          export CGO_ENABLED=1
+          export GOOS=darwin
+          export GOARCH=arm64
+          wails build -platform darwin/universal
+        shell: bash
+
+      - name: Upload Windows Build Artifact
         if: matrix.os == 'windows-latest'
+        uses: actions/upload-artifact@v4
         with:
-          name: Wails-Windows
+          name: wails-windows
           path: build/bin/*.exe
 
-      - name: Upload artifact (Linux)
-        uses: actions/upload-artifact@v4
+      - name: Upload Linux Build Artifact
         if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v4
         with:
-          name: Wails-Linux
+          name: wails-linux
           path: build/bin/*
 
-      - name: Upload artifact (macOS)
-        uses: actions/upload-artifact@v4
+      - name: Upload macOS Build Artifact
         if: matrix.os == 'macos-latest'
+        uses: actions/upload-artifact@v4
         with:
-          name: Wails-macOS
+          name: wails-macos
           path: build/bin/*
