@@ -36,7 +36,7 @@ jobs:
         if: matrix.os == 'ubuntu-22.04'
         run: |
           sudo apt update
-          sudo apt install -y libgtk-3-dev libwebkit2gtk-4.0-dev build-essential
+          sudo apt install -qq -y libgtk-3-dev libwebkit2gtk-4.0-dev build-essential
 
       - name: Install Wails
         run: go install github.com/wailsapp/wails/v2/cmd/wails@latest
@@ -56,12 +56,12 @@ jobs:
         run: mv build/bin/admin.exe admin-windows-amd64.exe
 
       - name: Rename Output (Linux)
-        if: runner.os == 'ubuntu-22.04'
+        if: matrix.os == 'ubuntu-22.04'
         run: mv build/bin/admin admin-linux-amd64
 
       - name: Upload Artifact to Release (Linux)
         uses: softprops/action-gh-release@v2
-        if: runner.os == 'ubuntu-22.04'
+        if: matrix.os == 'ubuntu-22.04'
         with:
           files: myapp-linux-amd64
           token: ${{ secrets.MY_GITHUB_PAT }}
